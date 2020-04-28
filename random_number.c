@@ -9,6 +9,7 @@
 
 #include <linux/fs.h>             
 
+#include <linux/random.h>
 #define  DEVICE_NAME "random_number" 
 #define  CLASS_NAME  "CS333"
 
@@ -20,7 +21,7 @@ MODULE_VERSION("1.0");
 static struct class*  Random_number_character_class  = NULL; 
 static struct device* Random_number_character_device = NULL;
 
-static char   rand_num[99] = "17589234";  // sending the random number as a string value         
+static char   rand_num[99] = "420";  // sending the random number as a string value         
 static short  message_lenght;              
 
 static int    major_number;                  
@@ -83,6 +84,9 @@ static int __init random_device_init(void){
    }
    printk(KERN_INFO "Random_num_device device created successfully!\n");    
    return 0;
+
+
+
 }
 
 static void __exit random_device_exit(void){
@@ -119,6 +123,15 @@ static ssize_t write_device(struct file *filep, const char *buffer, size_t len, 
 
 static ssize_t read_device(struct file *filep, char *buffer, size_t len, loff_t *offset)
 {
+	// generate the number
+   int i, lessthen100000;
+   get_random_bytes(&i, sizeof(i));
+   lessthen100000 = i % 100000;
+   printk(KERN_INFO "interger i is %d", i);
+   printk(KERN_INFO "lessthen100000 is %d", lessthen100000);
+   sprintf(rand_num,"%d",lessthen100000);
+   printk(KERN_INFO "rand_num is %s", rand_num);
+
    int err = 0; //number of errors that occur during the copying
 
    message_lenght = strlen(rand_num);

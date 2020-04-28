@@ -13,7 +13,8 @@ int main()
 {
    int device;
 
-   device = open("/dev/random_number", O_RDWR); // Open the device with read/write rights
+   device = open("/dev/random_number", O_RDWR); 
+   // Open the device with read/write rights
    if (device < 0)
 	{
       perror("Can't open the device!");
@@ -28,6 +29,6 @@ int main()
       perror("Something went wrong with the magic number");
       return errno;
    }
-   printf("The magic number is '%s' ", receive);
+   printf("The magic number is '%s' \n", receive);
    return 0;
 }
