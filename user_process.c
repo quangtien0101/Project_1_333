@@ -21,7 +21,7 @@ int main()
       return errno;
    	}
 
-   printf("Getting the magic number\n");
+   printf("Getting the magic number ... \n");
 
    int recv = read(device, receive, BYFFER);       
    if (recv < 0)

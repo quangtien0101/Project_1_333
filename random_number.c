@@ -1,27 +1,22 @@
 #include <linux/init.h>           
 #include <linux/module.h>         
 #include <linux/kernel.h>  
-
-
-
 #include <linux/uaccess.h>
 #include <linux/device.h>         
-
 #include <linux/fs.h>             
-
 #include <linux/random.h>
 #define  DEVICE_NAME "random_number" 
 #define  CLASS_NAME  "CS333"
 
 MODULE_LICENSE("GPL");            
-MODULE_AUTHOR("Bruh!123");    
+MODULE_AUTHOR("Anonymous");    
 MODULE_DESCRIPTION("Project1 CS333 making a character device");  
 MODULE_VERSION("1.0");          
 
 static struct class*  Random_number_character_class  = NULL; 
 static struct device* Random_number_character_device = NULL;
 
-static char   rand_num[99] = "420";  // sending the random number as a string value         
+static char   rand_num[99] = "1751106";  // sending the random number as a string value         
 static short  message_lenght;              
 
 static int    major_number;                  
@@ -45,7 +40,7 @@ static struct file_operations file_ops =
 };
 
 static int __init random_device_init(void){
-   printk(KERN_INFO "Random_num_device: Initializing the Random_num_device LKM\n");
+   printk(KERN_INFO "Random_num_device is initializing ...\n");
 
    major_number = register_chrdev(0, DEVICE_NAME, &file_ops);
    if (major_number<0)
@@ -55,7 +50,7 @@ static int __init random_device_init(void){
       return major_number;
    }
 
-   printk(KERN_INFO "Random_num_device registered successfully: Major Number %d\n", major_number);
+   printk(KERN_INFO "Random_num_device registered successfully with major number %d \n", major_number);
 
 //device class registration
    Random_number_character_class = class_create(THIS_MODULE, CLASS_NAME);
@@ -101,38 +96,39 @@ static void __exit random_device_exit(void){
    printk(KERN_INFO "Random_num_device destroyed successfully!");
 }
 
-static int open_device(struct inode *inodep, struct file *filep){
+static int open_device(struct inode *inodep, struct file *filep)
+{
    numberOpens++;
-   printk(KERN_INFO "Random_num_device opens at %d time(s)\n", numberOpens);
+   printk(KERN_INFO "Random_num_device open\n");
    return 0;
 }
 
-static int release_device(struct inode *inodep, struct file *filep){
+static int release_device(struct inode *inodep, struct file *filep)
+{
    printk(KERN_INFO "Random_num_device: Device successfully closed\n");
    return 0;
 }
 
 
 
-static ssize_t write_device(struct file *filep, const char *buffer, size_t len, loff_t *offset){
+static ssize_t write_device(struct file *filep, const char *buffer, size_t len, loff_t *offset)
+{
   // This is a read only device!
-   printk(KERN_ALERT "This operation is not supported.\n");
+   printk(KERN_ALERT "The write operation isn't allowed.\n");
    return -EINVAL;
 
 }
 
 static ssize_t read_device(struct file *filep, char *buffer, size_t len, loff_t *offset)
 {
-	// generate the number
-   int i, lessthen100000;
+	// generate the random magic number
+   int i;
    get_random_bytes(&i, sizeof(i));
-   lessthen100000 = i % 100000;
    printk(KERN_INFO "interger i is %d", i);
-   printk(KERN_INFO "lessthen100000 is %d", lessthen100000);
-   sprintf(rand_num,"%d",lessthen100000);
+   sprintf(rand_num,"%d",i);
    printk(KERN_INFO "rand_num is %s", rand_num);
 
-   int err = 0; //number of errors that occur during the copying
+   int err = 0; //number of errors occur during the copying
 
    message_lenght = strlen(rand_num);
 
@@ -140,8 +136,9 @@ static ssize_t read_device(struct file *filep, char *buffer, size_t len, loff_t 
    err = copy_to_user(buffer, rand_num, message_lenght);
    
 
-   if (err==0)
-   {            // if t
+   if (err==0) // no error occurs
+   {  
+
       printk(KERN_INFO "Random_num_device sent the magic number the user\n");
       return (message_lenght=0);
    }
